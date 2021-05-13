@@ -12,3 +12,5 @@
     * userId
     * averageCommentsPerPost
    
+3. Результат представить в виде github репозитория.
+   
