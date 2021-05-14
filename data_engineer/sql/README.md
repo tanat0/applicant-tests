@@ -49,7 +49,7 @@ select count (*) from items
 
 ### 1) Общее количество покупателей
 
-| **Customer****CountDistinct** |
+| **CustomerCountDistinct** |
 | ----------------------------- |
 | #                             |
 
@@ -59,7 +59,7 @@ select count (*) from items
 
 ### 2) Количество покупателей из Италии и Франции
 
-| **Country_name** | **Customer****CountDistinct** |
+| **Country_name** | **CustomerCountDistinct** |
 | ------------------------- | ----------------------------- |
 | France                    | #                             |
 | Italy                     | #                             |
