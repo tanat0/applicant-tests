@@ -86,7 +86,7 @@ select count (*) from items
 
 ### 4) Общая выручка USD по странам, если нет дохода, вернуть NULL
 
-| **Country\_****n****ame** | **RevenuePerCountry** |
+| **Country_name** | **RevenuePerCountry** |
 | ------------------------- | --------------------- |
 | Italy                     | #                     |
 | France                    | NULL                  |
