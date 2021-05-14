@@ -1,16 +1,7 @@
-# Задание программирование Data Engineer
+# Тесты на вакансию Data Engineer
 
-## Python
-
-Необходимо:
-1. Получить данные по комментариям и постам с ресурса http://jsonplaceholder.typicode.com/
-    * http://jsonplaceholder.typicode.com/posts
-    * http://jsonplaceholder.typicode.com/comments
-
-2. Посчитать среднее количество комментариев к посту каждого
-   пользователя, результатом должен быть словарь формата:
-    * user_id
-    * average_comments_per_post
-   
-3. Результат представить в виде github репозитория.
-   
+В папках /python и /sql лежит описание тестовых заданий. 
+Для решения, необходимо 
+1) выполнить fork данного репозитория
+2) выполнить задания из папок
+3) сделать pull request в данный репозиторий
