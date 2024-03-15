@@ -148,7 +148,7 @@ class Order:
          print(f'Верифицируем код: {security_code}')
          self.status = 'paid'
       else:
-         raise Exception(f'Неизвестные тип платежа: {payment_type}')
+         raise Exception(f'Неизвестный тип платежа: {payment_type}')
 
 
 def main() -> None:
