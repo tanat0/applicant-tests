@@ -140,11 +140,11 @@ class Order:
 
    def pay(self, payment_type, security_code):
       if payment_type == 'debit':
-         print('debit')
+         print('Какая-то логика реализации debit...')
          print(f'Верифицируем код: {security_code}')
          self.status = 'paid'
       elif payment_type == 'credit':
-         print('credit')
+         print('Какая-то логика реализации credit...')
          print(f'Верифицируем код: {security_code}')
          self.status = 'paid'
       else:
