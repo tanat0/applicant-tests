@@ -153,11 +153,11 @@ class Order:
 
 def main() -> None:
    order = Order()
-   order.add_item("Keyboard", 1, 50)
-   order.add_item("SSD", 1, 150)
-   order.add_item("USB cable", 2, 5)
+   order.add_item('Keyboard', 1, 50)
+   order.add_item('SSD', 1, 150)
+   order.add_item('USB cable', 2, 5)
    print(order.total_price())
-   order.pay("debit", "0372846")
+   order.pay('debit', '0372846')
 
 
 if __name__ == "__main__":
