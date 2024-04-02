@@ -55,7 +55,12 @@ select count (*) from items
 | Italy                     | #                             |
 
 ```sql
--- result here
+select country_name, count(customer_id) as CustomerCountDistinct
+from customer t1
+left join countries t2
+on t1.country_code = t2.country_code
+where country_name in ('France', 'Italy')
+group by country_name;
 ```
 
 ### 2) ТОП 10 покупателей по расходам
@@ -71,7 +76,29 @@ select count (*) from items
 | #                      | #           |
 
 ```sql
--- result here
+with pokupki as(
+select customer_name, t1.customer_id, item_id, quantity
+from customer t1
+inner join orders t2
+on t1.customer_id = t2.customer_id
+),
+
+pokupki_with_prices as(
+select * from pokupki t3
+inner join items t4
+on t3.item_id = t4.item_id
+),
+
+customer_costs as (
+select customer_name, item_price * quantity as purch_sum
+from pokupki_with_prices
+)
+
+select customer_name, sum(purch_sum) as Revenue
+from customer_costs
+group by customer_name
+order by 2 desc
+limit 10;
 ```
 
 ### 3) Общая выручка USD по странам, если нет дохода, вернуть NULL
@@ -85,7 +112,29 @@ select count (*) from items
 | Tanzania                  | #                     |
 
 ```sql
--- result here
+with pokupki as(
+select customer_name, t1.customer_id, item_id, quantity, country_code
+from customer t1
+inner join orders t2
+on t1.customer_id = t2.customer_id
+),
+
+pokupki_with_prices as(
+select * from pokupki t3
+inner join items t4
+on t3.item_id = t4.item_id
+),
+
+customer_costs as (
+select customer_name, item_price * quantity as purch_sum, country_name
+from pokupki_with_prices t5
+right join countries t6
+on t5.country_code = t6.country_code
+)
+
+select country_name, sum(purch_sum) as RevenuePerCountry
+from customer_costs
+group by country_name;
 ```
 
 ### 4) Самый дорогой товар, купленный одним покупателем
@@ -101,7 +150,25 @@ select count (*) from items
 | #                | #                  | #                         |
 
 ```sql
--- result here
+with pokupki as(
+select customer_name, t1.customer_id as customer_id, item_id           
+from customer t1
+left join orders t2
+on t1.customer_id = t2.customer_id
+),
+
+pokupki_with_prices as(
+select * from pokupki t3
+inner join items t4
+on t3.item_id = t4.item_id
+) 
+
+select customer_id, customer_name, item_name as MostExpansiveItemName
+from(
+select *, rank() over (partition by customer_id order by item_price desc)
+from pokupki_with_prices
+) t5
+where rank = 1;
 ```
 
 ### 5) Ежемесячный доход
@@ -117,7 +184,11 @@ select count (*) from items
 | #                     | #                 |
 
 ```sql
--- result here
+select extract(month from date_time) as Month, sum(quantity * item_price) as TotalRevenue
+from items t1
+inner join orders t2
+on t1.item_id =  t2.item_id 
+group by Month;
 ```
 
 ### 6) Найти дубликаты
@@ -127,7 +198,13 @@ select count (*) from items
 Вы должны их найти и вернуть количество дубликатов.
 
 ```sql
--- result here
+select count(*)                        
+from(
+select date_time, customer_id, item_id
+from orders
+group by date_time, customer_id, item_id    
+having count(*)  > 1
+) t;
 ```
 
 ### 7) Найти "важных" покупателей
@@ -146,7 +223,24 @@ select count (*) from items
 | #                     | #                             |
 
 ```sql
--- result here
+with t1 as (
+select customer_id, min(date_time) as first      
+from orders
+group by customer_id
+),
+
+t2 as (
+select t.customer_id, count(*) as TotalOrdersCount
+from orders t
+inner join t1             
+on t.customer_id = t1.customer_id
+where date_time > first
+group by t.customer_id
+)
+
+select customer_id, TotalOrderscount
+from t2
+order by 2 desc;
 ```
 
 ### 8) Найти покупателей с "ростом" за последний месяц
@@ -166,5 +260,42 @@ select count (*) from items
 | #                     | #                 |
 
 ```sql
--- result here
+with t1 as (
+select extract(month from date_time) as Month, avg(quantity * item_price) as AvgRevenue
+from items t1
+inner join orders t2
+on t1.item_id =  t2.item_id
+group by Month
+),
+yearavg as (
+select avg(avgrevenue) as yearavg
+from t1),
+
+pokupki as(
+select customer_name, t1.customer_id, item_id, quantity, date_time
+from customer t1
+inner join orders t2
+on t1.customer_id = t2.customer_id
+),
+
+pokupki_with_prices as(
+select * from pokupki t3
+inner join items t4
+on t3.item_id = t4.item_id
+),
+
+customer_costs as (
+select extract(month from date_time) as month, customer_id, item_price * quantity as purch_sum
+from pokupki_with_prices
+)
+
+select customer_id, sum(purch_sum) as TotalRevenue
+from (
+select customer_id, purch_sum, rank() over (partition by customer_id order by month desc) as rank
+from customer_costs
+) tt
+where rank = 1        
+group by customer_id
+having sum(purch_sum) >  (select  yearavg  from yearavg)
+order by 2 desc;
 ```
